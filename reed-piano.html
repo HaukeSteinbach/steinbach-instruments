@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reed Piano · Steinbach Instruments (Concept)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --void:#0b0908;
+    --void-2:#141110;
+    --void-3:#1b1614;
+    --deep-avocado:#1d2114;
+    --parchment:#ece3d1;
+    --parchment-dim:#b9ae98;
+    --parchment-faint:#83796a;
+    --brass:#c65947;
+    --brass-bright:#f09a86;
+    --slate:#6b7480;
+    --line: rgba(236,227,209,0.12);
+    --line-strong: rgba(236,227,209,0.22);
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--void);
+    color:var(--parchment);
+    font-family:var(--font-body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{ color:inherit; }
+  img{ max-width:100%; display:block; }
+
+  ::selection{ background:var(--brass); color:var(--void); }
+
+  :focus-visible{
+    outline: 2px solid var(--brass-bright);
+    outline-offset: 3px;
+  }
+
+  /* film grain overlay */
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:200;
+    opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--brass);
+  }
+
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 clamp(20px, 5vw, 64px);
+  }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px clamp(20px, 5vw, 64px);
+    background:transparent;
+    border-bottom:1px solid transparent;
+    transition:background 0.4s ease, border-color 0.4s ease, padding 0.3s ease;
+  }
+  .nav.scrolled{
+    background:rgba(11,9,8,0.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    padding-top:14px; padding-bottom:14px;
+  }
+  .nav-mark{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--parchment);
+    text-decoration:none;
+  }
+  .nav-mark span{ color:var(--brass); }
+  .nav-links{
+    display:flex; gap:clamp(16px,3vw,36px);
+    list-style:none; margin:0; padding:0;
+  }
+  .nav-links a{
+    font-family:var(--font-mono);
+    font-size:0.7rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:var(--parchment-dim);
+    transition:color 0.25s ease;
+  }
+  .nav-links a:hover{ color:var(--brass-bright); }
+  .nav-links a.active{ color:var(--brass-bright); }
+  @media (max-width:720px){ .nav-links{ display:none; } }
+
+  /* Mobile nav (burger) */
+  .nav-toggle{
+    display:none;
+    flex-direction:column; justify-content:center; align-items:center; gap:5px;
+    width:40px; height:36px;
+    background:none; border:none; padding:0;
+    cursor:pointer;
+    position:relative; z-index:2;
+  }
+  .nav-toggle span{
+    display:block; width:22px; height:1.5px;
+    background:var(--parchment);
+    transition:transform 0.3s ease, opacity 0.3s ease;
+  }
+  .nav.menu-open .nav-toggle span:nth-child(1){ transform:translateY(6.5px) rotate(45deg); }
+  .nav.menu-open .nav-toggle span:nth-child(2){ opacity:0; }
+  .nav.menu-open .nav-toggle span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
+  @media (max-width:720px){
+    .nav-toggle{ display:flex; }
+    .nav-mark{ position:relative; z-index:2; }
+    .nav.menu-open{ backdrop-filter:none; -webkit-backdrop-filter:none; }
+    .nav.menu-open .nav-links{
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:26px;
+      position:fixed; inset:0;
+      background:rgba(11,9,8,0.97);
+      backdrop-filter:blur(10px);
+    }
+    .nav.menu-open .nav-links a{ font-size:0.95rem; letter-spacing:0.16em; }
+    .nav.menu-open .nav-item-drop{ text-align:center; }
+    .nav.menu-open .nav-item-drop > a .caret{ display:none; }
+    .nav.menu-open .nav-drop-menu,
+    .nav.menu-open .nav-item-drop:hover .nav-drop-menu,
+    .nav.menu-open .nav-item-drop:focus-within .nav-drop-menu{
+      position:static; transform:none;
+      opacity:1; visibility:visible;
+      min-width:0; border:none; background:none; backdrop-filter:none;
+      padding:14px 0 0;
+      display:flex; flex-direction:column; align-items:center; gap:16px;
+    }
+    .nav.menu-open .nav-drop-menu::before{ display:none; }
+    .nav.menu-open .nav-drop-menu a{ font-size:0.78rem; color:var(--parchment-faint); padding:0; }
+    .nav.menu-open .nav-drop-menu a.current{ color:var(--brass-bright); }
+    body.menu-open{ overflow:hidden; }
+  }
+
+  /* Instruments dropdown */
+  .nav-item-drop{ position:relative; }
+  .nav-item-drop > a .caret{
+    display:inline-block; font-size:0.55rem; margin-left:5px;
+    transform:translateY(-1px);
+  }
+  .nav-drop-menu{
+    position:absolute; top:calc(100% + 12px); left:50%;
+    transform:translateX(-50%) translateY(-4px);
+    min-width:190px;
+    background:rgba(11,9,8,0.96);
+    backdrop-filter:blur(8px);
+    border:1px solid var(--line);
+    border-radius:3px;
+    list-style:none; margin:0; padding:6px 0;
+    opacity:0; visibility:hidden;
+    transition:opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  .nav-drop-menu::before{
+    content:""; position:absolute; top:-14px; left:0; right:0; height:14px;
+  }
+  .nav-item-drop:hover .nav-drop-menu,
+  .nav-item-drop:focus-within .nav-drop-menu{
+    opacity:1; visibility:visible;
+    transform:translateX(-50%) translateY(0);
+  }
+  .nav-drop-menu a{ display:block; padding:10px 18px; white-space:nowrap; }
+  .nav-drop-menu a.current{ color:var(--brass-bright); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    display:flex;
+    align-items:flex-end;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-bg{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse at 50% 20%, rgba(198,89,71,0.12), transparent 55%),
+      linear-gradient(180deg, var(--void-2) 0%, var(--void) 62%, var(--void) 100%);
+  }
+  .hero-bg::after{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(90deg, transparent 0 46px, rgba(236,227,209,0.025) 46px 47px);
+    opacity:0.6;
+  }
+  .hero-beam{
+    position:absolute; top:-12%; left:-8%; width:160%; height:170%;
+    transform-origin:0% 0%;
+    background:conic-gradient(from 0deg at 0% 0%,
+      transparent 98deg,
+      rgba(240,154,134,0.025) 116deg,
+      rgba(240,154,134,0.06) 135deg,
+      rgba(240,154,134,0.025) 154deg,
+      transparent 172deg);
+    mix-blend-mode:screen;
+    -webkit-mask-image:linear-gradient(180deg, #000 0%, #000 28%, transparent 57%);
+    mask-image:linear-gradient(180deg, #000 0%, #000 28%, transparent 57%);
+    animation:spotlight 14s ease-in-out infinite alternate;
+  }
+  @keyframes spotlight{
+    from{ transform:rotate(-7deg); }
+    to{ transform:rotate(7deg); }
+  }
+
+  .hero-content{
+    position:relative; z-index:2;
+    width:100%;
+    max-width:1180px;
+    margin:0 auto;
+    padding:120px clamp(20px,5vw,64px) 88px;
+    text-align:center;
+    display:flex; flex-direction:column;
+    justify-content:flex-end;
+    min-height:100svh;
+  }
+  .hero h1{
+    font-family:var(--font-display);
+    font-optical-sizing:auto;
+    font-weight:340;
+    font-size:clamp(4rem, 11vw, 10rem);
+    line-height:0.92;
+    letter-spacing:-0.01em;
+    white-space:nowrap;
+    margin:0 0 28px;
+    color:var(--parchment);
+    text-shadow:0 2px 30px rgba(11,9,8,0.6), 0 0 90px rgba(11,9,8,0.5);
+  }
+  .hero h1 em{
+    font-style:italic;
+    font-weight:300;
+    color:var(--brass-bright);
+  }
+  @media (max-width:719px){
+    .hero h1{ white-space:normal; font-size:clamp(3rem, 15vw, 5.5rem); }
+  }
+  .hero-sub{
+    font-family:var(--font-mono);
+    font-size:0.82rem;
+    letter-spacing:0.05em;
+    color:var(--parchment-dim);
+    margin:0 0 38px;
+  }
+  .hero-actions{ display:flex; flex-wrap:wrap; gap:16px; justify-content:center; }
+
+  .btn{
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    text-decoration:none;
+    padding:15px 30px;
+    border-radius:2px;
+    border:1px solid var(--brass);
+    transition:all 0.25s ease;
+    cursor:pointer;
+    background:none;
+  }
+  .btn-fill{
+    background:linear-gradient(180deg, var(--brass-bright), var(--brass));
+    color:var(--void);
+    border-color:transparent;
+  }
+  .btn-fill:hover{ filter:brightness(1.12); transform:translateY(-1px); }
+  .btn-ghost{ color:var(--parchment-dim); }
+  .btn-ghost:hover{ border-color:var(--brass-bright); color:var(--brass-bright); }
+  .btn-disabled{
+    background:rgba(236,227,209,0.07);
+    border-color:transparent;
+    color:var(--parchment-faint);
+    cursor:not-allowed;
+  }
+  .btn-disabled:hover{ transform:none; filter:none; }
+  .btn-small{ padding:10px 18px; font-size:0.68rem; }
+
+  /* ---------- SECTION GENERIC ---------- */
+  .section{ padding:140px 0; border-bottom:1px solid var(--line); }
+  .section-head{ max-width:640px; margin-bottom:64px; }
+  .section-head h2,
+  .rank-copy h2{
+    font-family:var(--font-display);
+    font-weight:340;
+    font-size:clamp(2rem, 4.2vw, 3.1rem);
+    line-height:1.08;
+    margin:16px 0 0;
+    color:var(--parchment);
+  }
+  .section-head h2 i,
+  .rank-copy h2 i{ color:var(--brass-bright); font-style:italic; font-weight:300; }
+
+  /* ---------- PREVIEW / DEMO PLACEHOLDER ---------- */
+  .rank-section{ background:var(--void-2); }
+  .rank-copy{ max-width:620px; margin-bottom:56px; }
+  .rank-copy p{ color:var(--parchment-dim); }
+
+  .rank-stage{
+    background:var(--void-3);
+    border:1px solid var(--line);
+    border-radius:4px;
+  }
+  .demo-placeholder{
+    min-height:340px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:16px;
+    text-align:center;
+    padding:48px 24px;
+  }
+  .demo-placeholder-title{
+    font-family:var(--font-display);
+    font-weight:340; font-style:italic;
+    font-size:1.5rem;
+    color:var(--parchment-dim);
+    margin:0;
+  }
+  .demo-placeholder-sub{
+    font-family:var(--font-mono);
+    font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--parchment-faint);
+    margin:0;
+  }
+  .demo-placeholder-reeds{
+    display:flex; align-items:flex-end; gap:5px;
+    margin-bottom:10px;
+  }
+  .demo-placeholder-reeds span{
+    width:9px;
+    border-radius:2px 2px 1px 1px;
+    background:linear-gradient(180deg, #35302b, #1c1815);
+    border:1px solid rgba(236,227,209,0.08);
+  }
+  .demo-placeholder-reeds span:nth-child(2n){
+    background:linear-gradient(180deg, #3a2620 0%, #20130f 100%);
+    border-color:rgba(198,89,71,0.25);
+  }
+  .demo-placeholder-reeds span:nth-child(1){ height:58px; }
+  .demo-placeholder-reeds span:nth-child(2){ height:52px; }
+  .demo-placeholder-reeds span:nth-child(3){ height:47px; }
+  .demo-placeholder-reeds span:nth-child(4){ height:42px; }
+  .demo-placeholder-reeds span:nth-child(5){ height:38px; }
+  .demo-placeholder-reeds span:nth-child(6){ height:34px; }
+  .demo-placeholder-reeds span:nth-child(7){ height:30px; }
+  .demo-placeholder-reeds span:nth-child(8){ height:27px; }
+  .demo-placeholder-reeds span:nth-child(9){ height:24px; }
+  .demo-placeholder-reeds span:nth-child(10){ height:21px; }
+
+  /* ---------- FEATURES ---------- */
+  .feature-row{
+    display:grid; grid-template-columns:120px 1fr; gap:32px;
+    padding:36px 0; border-top:1px solid var(--line);
+  }
+  .feature-row:last-child{ border-bottom:1px solid var(--line); }
+  .feature-num{
+    font-family:var(--font-mono); color:var(--brass); font-size:0.85rem; padding-top:4px;
+  }
+  .feature-row h3{
+    font-family:var(--font-display); font-weight:400; font-size:1.5rem; margin:0 0 10px;
+    color:var(--parchment);
+  }
+  .feature-row p{ margin:0; color:var(--parchment-dim); max-width:640px; }
+  @media (max-width:640px){ .feature-row{ grid-template-columns:1fr; gap:8px; } }
+
+  /* ---------- PLATE (image placeholder, archival style) ---------- */
+  .plate{
+    position:relative;
+    border-radius:3px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(198,89,71,0.10), transparent 60%),
+      linear-gradient(155deg, #221a17 0%, #0e0c0b 70%);
+    border:1px solid var(--line);
+    min-height:260px;
+  }
+  .plate::before{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 5px);
+  }
+  .plate-label{
+    position:absolute; left:14px; bottom:14px; right:14px;
+    z-index:2;
+    display:flex; justify-content:space-between; gap:12px;
+    font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.08em;
+    color:var(--parchment-dim); text-transform:uppercase;
+  }
+  .plate-label span:last-child{ color:var(--brass); text-align:right; }
+
+  /* ---------- INSTRUMENT STORY ---------- */
+  .instrument{ background:var(--deep-avocado); border-bottom:1px solid var(--line); }
+  .instrument-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:stretch;
+  }
+  .instrument-text p{ color:#dde2cf; }
+  .instrument-text strong{ color:var(--parchment); }
+  .pull-quote{
+    font-family:var(--font-display); font-style:italic; font-weight:300;
+    font-size:1.4rem; line-height:1.4; color:var(--brass-bright);
+    margin:34px 0 0; padding-left:22px; border-left:2px solid var(--brass);
+  }
+  .instrument .plate{ min-height:420px; }
+  @media (max-width:860px){ .instrument-grid{ grid-template-columns:1fr; } .instrument .plate{ min-height:280px; } }
+
+  /* ---------- GALLERY ---------- */
+  .gallery-grid{
+    display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:18px;
+  }
+  .gallery-grid .plate:first-child{ min-height:440px; }
+  .gallery-grid .plate{ min-height:210px; }
+  @media (max-width:760px){ .gallery-grid{ grid-template-columns:1fr; } .gallery-grid .plate:first-child{ min-height:260px; } }
+
+  /* ---------- SPECS ---------- */
+  .specs{ background:var(--void-2); }
+  .spec-table{ border-top:1px solid var(--line); }
+  .spec-row{
+    display:grid; grid-template-columns:220px 1fr 1fr;
+    gap:20px; padding:22px 0; border-bottom:1px solid var(--line);
+    align-items:baseline;
+  }
+  .spec-label{ font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--brass); }
+  .spec-value{ font-family:var(--font-display); font-size:1.25rem; font-weight:400; color:var(--parchment); }
+  .spec-sub{ font-family:var(--font-mono); font-size:0.78rem; color:var(--parchment-faint); text-align:right; }
+  @media (max-width:640px){
+    .spec-row{ grid-template-columns:1fr; gap:4px; }
+    .spec-sub{ text-align:left; }
+  }
+
+  /* ---------- CTA ---------- */
+  .cta{
+    text-align:center; padding:160px 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(198,89,71,0.09), transparent 60%),
+      var(--void);
+  }
+  .cta h2{
+    font-family:var(--font-display); font-weight:340;
+    font-size:clamp(2.2rem, 5vw, 3.6rem); margin:14px 0 20px;
+  }
+  .cta p{ color:var(--parchment-dim); max-width:520px; margin:0 auto 40px; }
+  .cta .btn{ display:inline-block; }
+  .cta-fine{ margin-top:40px; font-family:var(--font-mono); font-size:0.7rem; color:var(--parchment-faint); letter-spacing:0.04em; }
+
+  /* ---------- FOOTER ---------- */
+  .footer{ padding:64px 0 40px; }
+  .footer-disclaimer{ font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.04em; line-height:1.7; color:var(--parchment-faint); max-width:640px; margin:0 0 24px; }
+  .footer-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+  .footer-bottom, .footer-bottom a{
+    font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.06em; color:var(--parchment-faint); text-decoration:none;
+  }
+
+  .reveal{ opacity:0; transform:translateY(24px); transition:opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:720px){
+    .section{ padding:88px 0; }
+    .cta{ padding:100px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="nav" id="nav">
+  <a href="index.html" class="nav-mark">STEINBACH <span>INSTRUMENTS</span></a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li class="nav-item-drop">
+      <a href="instruments.html" class="active">Instruments<span class="caret">▾</span></a>
+      <ul class="nav-drop-menu">
+        <li><a href="historic-organ-concept.html">Historic Organ</a></li>
+        <li><a href="tine-piano.html">Tine Piano</a></li>
+        <li><a href="transistor-organ.html">Transistor Organ</a></li>
+        <li><a href="reed-piano.html" class="current">Reed Piano</a></li>
+      </ul>
+    </li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-beam"></div>
+    <div class="hero-content">
+      <h1>Reed <em>Piano</em></h1>
+      <p class="hero-sub">Electro-mechanical reed piano · Currently in production</p>
+      <div class="hero-actions">
+        <a href="#preview" class="btn btn-fill">Preview</a>
+        <a href="#download" class="btn btn-ghost">Release &middot; Coming soon</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section rank-section" id="preview">
+    <div class="wrap">
+      <div class="rank-copy reveal">
+        <div class="eyebrow">Interactive Preview</div>
+        <h2>Strike the <i>reeds.</i></h2>
+        <p>Like the Historic Organ, the Reed Piano will feature a playable preview: the original panel, real sampled sound, right here in the browser. The instrument is currently being sampled and edited.</p>
+      </div>
+
+      <div class="rank-stage demo-placeholder reveal">
+        <div class="demo-placeholder-reeds" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <p class="demo-placeholder-title">The demo is being built.</p>
+        <p class="demo-placeholder-sub">Sampling in progress &middot; Preview follows</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">Built For Bite</div>
+        <h2>Designed for <i>soul.</i></h2>
+      </div>
+
+      <div class="features">
+        <div class="feature-row reveal">
+          <div class="feature-num">01</div>
+          <div><h3>Key-by-Key Sampling</h3><p>Every reed captured individually. Played softly, it purrs like a vibraphone &mdash; each key keeps its own voice and temper.</p></div>
+        </div>
+        <div class="feature-row reveal">
+          <div class="feature-num">02</div>
+          <div><h3>Multiple Velocity Layers</h3><p>The famous bark lives in the dynamics: strike harder and the reeds overdrive into that growling midrange. The full dynamic arc is preserved across velocity layers.</p></div>
+        </div>
+        <div class="feature-row reveal">
+          <div class="feature-num">03</div>
+          <div><h3>Vibrato, Both Ways</h3><p>The built-in vibrato is half the charm of the instrument. Every key is sampled with and without it, switchable just like on the original panel.</p></div>
+        </div>
+        <div class="feature-row reveal">
+          <div class="feature-num">04</div>
+          <div><h3>KONTAKT &amp; Standalone</h3><p>Available for Native Instruments KONTAKT and as a standalone app &mdash; with a custom GUI in the style of the original panel, in the same series design as the Historic Organ.</p></div>
+        </div>
+        <div class="feature-row reveal">
+          <div class="feature-num">05</div>
+          <div><h3>An Icon, Preserved</h3><p>The reeds snap, and every replacement is hand-tuned with solder &mdash; no two instruments age alike. This library documents one of them, faithfully, for good.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section instrument" id="instrument">
+    <div class="wrap">
+      <div class="instrument-grid">
+        <div class="instrument-text reveal">
+          <div class="eyebrow">The Instrument</div>
+          <h2 style="font-family:var(--font-display); font-weight:340; font-size:clamp(2rem,4vw,3rem); margin:16px 0 26px;">The bark of soul. <i style="color:var(--brass-bright); font-style:italic; font-weight:300;">The purr of ballads.</i></h2>
+          <p>The instrument behind this library is a <strong>Wurlitzer 200A</strong> &mdash; the classic American electric piano, built from the 1950s onward, that makes its sound with hammers striking steel reeds over an electrostatic pickup. A mechanism found in no other instrument: soft, it shimmers; hard, it barks.</p>
+          <p>That voice carried decades of soul, rock and pop. But the instrument is famously fragile: reeds snap mid-song, replacements must be tuned by hand with drops of solder, and the amplifiers hum with age. Every surviving unit is a little different &mdash; and slowly becoming rarer.</p>
+          <p class="pull-quote">No two reed pianos age alike. This one is worth remembering.</p>
+        </div>
+        <div class="plate reveal">
+          <div class="plate-label"><span>Plate 01 &middot; Awaiting photography</span><span>In production</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="recording">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">Recording Session</div>
+        <h2>In the <i>studio.</i></h2>
+      </div>
+      <div class="gallery-grid">
+        <div class="plate reveal"><div class="plate-label"><span>Plate 02 &middot; Awaiting photography</span><span>01</span></div></div>
+        <div class="plate reveal"><div class="plate-label"><span>Plate 03 &middot; Awaiting photography</span><span>02</span></div></div>
+        <div class="plate reveal"><div class="plate-label"><span>Plate 04 &middot; Awaiting photography</span><span>03</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section specs" id="technical">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">Technical</div>
+        <h2>What&rsquo;s <i>inside.</i></h2>
+      </div>
+      <div class="spec-table reveal">
+        <div class="spec-row"><div class="spec-label">Keys</div><div class="spec-value">64 Keys</div><div class="spec-sub">Sampled individually</div></div>
+        <div class="spec-row"><div class="spec-label">Vibrato</div><div class="spec-value">Built-in</div><div class="spec-sub">Sampled on + off</div></div>
+        <div class="spec-row"><div class="spec-label">Sample Format</div><div class="spec-value">24-bit / 96 kHz</div><div class="spec-sub">Lossless WAV</div></div>
+        <div class="spec-row"><div class="spec-label">Platform</div><div class="spec-value">KONTAKT 8+</div><div class="spec-sub">VST3 + AU + Standalone</div></div>
+        <div class="spec-row"><div class="spec-label">Compatibility</div><div class="spec-value">macOS</div><div class="spec-sub">Apple Silicon (M-series)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="download">
+    <div class="wrap">
+      <div class="eyebrow reveal">In Production</div>
+      <h2 class="reveal">Coming to the series.</h2>
+      <p class="reveal">The Reed Piano is currently being sampled and edited. Like the Historic Organ, it will be released as a complete instrument &mdash; for KONTAKT and as a standalone app.</p>
+      <span class="btn btn-disabled reveal" aria-disabled="true">Get the instrument</span>
+      <div class="cta-fine reveal">For KONTAKT 8+ &middot; Standalone app &middot; macOS &middot; Apple Silicon</div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="footer-disclaimer">All trademarks are the property of their respective owners and are used solely to identify the instruments that were sampled. No affiliation or endorsement is implied.</p>
+    <div class="footer-bottom">
+      <span>&copy; Steinbach Instruments &middot; Digital Heritage</span>
+      <span><a href="impressum.html">Legal Notice</a> &nbsp;&middot;&nbsp; <a href="datenschutz.html">Privacy Policy</a> &nbsp;&middot;&nbsp; <a href="#top">Back to top</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Nav background on scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive:true });
+
+  // Mobile menu toggle
+  const navToggle = document.getElementById('nav-toggle');
+  if (navToggle) {
+    navToggle.addEventListener('click', () => {
+      const open = nav.classList.toggle('menu-open');
+      document.body.classList.toggle('menu-open', open);
+      navToggle.setAttribute('aria-expanded', String(open));
+    });
+  }
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold:0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

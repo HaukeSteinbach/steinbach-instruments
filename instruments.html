@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Instruments · Steinbach Instruments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --void:#0b0908;
+    --void-2:#141110;
+    --void-3:#1b1614;
+    --parchment:#ece3d1;
+    --parchment-dim:#b9ae98;
+    --parchment-faint:#83796a;
+    --brass:#b58a4a;
+    --brass-bright:#e8c078;
+    --line: rgba(236,227,209,0.12);
+    --line-strong: rgba(236,227,209,0.22);
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--void);
+    color:var(--parchment);
+    font-family:var(--font-body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{ color:inherit; }
+  img{ max-width:100%; display:block; }
+
+  ::selection{ background:var(--brass); color:var(--void); }
+
+  :focus-visible{
+    outline: 2px solid var(--brass-bright);
+    outline-offset: 3px;
+  }
+
+  /* film grain overlay */
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:200;
+    opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--brass);
+  }
+
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 clamp(20px, 5vw, 64px);
+  }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px clamp(20px, 5vw, 64px);
+    background:transparent;
+    border-bottom:1px solid transparent;
+    transition:background 0.4s ease, border-color 0.4s ease, padding 0.3s ease;
+  }
+  .nav.scrolled{
+    background:rgba(11,9,8,0.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    padding-top:14px; padding-bottom:14px;
+  }
+  .nav-mark{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--parchment);
+    text-decoration:none;
+  }
+  .nav-mark span{ color:var(--brass); }
+  .nav-links{
+    display:flex; gap:clamp(16px,3vw,36px);
+    list-style:none; margin:0; padding:0;
+  }
+  .nav-links a{
+    font-family:var(--font-mono);
+    font-size:0.7rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:var(--parchment-dim);
+    transition:color 0.25s ease;
+  }
+  .nav-links a:hover{ color:var(--brass-bright); }
+  .nav-links a.active{ color:var(--brass-bright); }
+  @media (max-width:720px){ .nav-links{ display:none; } }
+
+  /* Mobile nav (burger) */
+  .nav-toggle{
+    display:none;
+    flex-direction:column; justify-content:center; align-items:center; gap:5px;
+    width:40px; height:36px;
+    background:none; border:none; padding:0;
+    cursor:pointer;
+    position:relative; z-index:2;
+  }
+  .nav-toggle span{
+    display:block; width:22px; height:1.5px;
+    background:var(--parchment);
+    transition:transform 0.3s ease, opacity 0.3s ease;
+  }
+  .nav.menu-open .nav-toggle span:nth-child(1){ transform:translateY(6.5px) rotate(45deg); }
+  .nav.menu-open .nav-toggle span:nth-child(2){ opacity:0; }
+  .nav.menu-open .nav-toggle span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
+  @media (max-width:720px){
+    .nav-toggle{ display:flex; }
+    .nav-mark{ position:relative; z-index:2; }
+    .nav.menu-open{ backdrop-filter:none; -webkit-backdrop-filter:none; }
+    .nav.menu-open .nav-links{
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:26px;
+      position:fixed; inset:0;
+      background:rgba(11,9,8,0.97);
+      backdrop-filter:blur(10px);
+    }
+    .nav.menu-open .nav-links a{ font-size:0.95rem; letter-spacing:0.16em; }
+    .nav.menu-open .nav-item-drop{ text-align:center; }
+    .nav.menu-open .nav-item-drop > a .caret{ display:none; }
+    .nav.menu-open .nav-drop-menu,
+    .nav.menu-open .nav-item-drop:hover .nav-drop-menu,
+    .nav.menu-open .nav-item-drop:focus-within .nav-drop-menu{
+      position:static; transform:none;
+      opacity:1; visibility:visible;
+      min-width:0; border:none; background:none; backdrop-filter:none;
+      padding:14px 0 0;
+      display:flex; flex-direction:column; align-items:center; gap:16px;
+    }
+    .nav.menu-open .nav-drop-menu::before{ display:none; }
+    .nav.menu-open .nav-drop-menu a{ font-size:0.78rem; color:var(--parchment-faint); padding:0; }
+    .nav.menu-open .nav-drop-menu a.current{ color:var(--brass-bright); }
+    body.menu-open{ overflow:hidden; }
+  }
+
+  /* Instruments dropdown */
+  .nav-item-drop{ position:relative; }
+  .nav-item-drop > a .caret{
+    display:inline-block; font-size:0.55rem; margin-left:5px;
+    transform:translateY(-1px);
+  }
+  .nav-drop-menu{
+    position:absolute; top:calc(100% + 12px); left:50%;
+    transform:translateX(-50%) translateY(-4px);
+    min-width:190px;
+    background:rgba(11,9,8,0.96);
+    backdrop-filter:blur(8px);
+    border:1px solid var(--line);
+    border-radius:3px;
+    list-style:none; margin:0; padding:6px 0;
+    opacity:0; visibility:hidden;
+    transition:opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  .nav-drop-menu::before{
+    content:""; position:absolute; top:-14px; left:0; right:0; height:14px;
+  }
+  .nav-item-drop:hover .nav-drop-menu,
+  .nav-item-drop:focus-within .nav-drop-menu{
+    opacity:1; visibility:visible;
+    transform:translateX(-50%) translateY(0);
+  }
+  .nav-drop-menu a{ display:block; padding:10px 18px; white-space:nowrap; }
+  .nav-drop-menu a.current{ color:var(--brass-bright); }
+
+  /* ---------- PAGE HEAD ---------- */
+  .page-head{
+    padding:200px 0 72px;
+  }
+  .page-head h1{
+    font-family:var(--font-display);
+    font-weight:340;
+    font-size:clamp(2.6rem, 5.5vw, 4.4rem);
+    line-height:1.04;
+    margin:18px 0 24px;
+    color:var(--parchment);
+    max-width:16ch;
+  }
+  .page-head h1 i{ color:var(--brass-bright); font-style:italic; font-weight:300; }
+  .page-head p{
+    max-width:560px;
+    color:var(--parchment-dim);
+    margin:0;
+  }
+
+  /* ---------- ENTRIES ---------- */
+  .entries{ padding-bottom:40px; }
+  .entry{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:clamp(32px, 5vw, 72px);
+    align-items:center;
+    padding:96px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .entry:last-child{ border-bottom:none; }
+  .entry:nth-of-type(even) .entry-visual{ order:2; }
+  .entry-visual{
+    position:relative;
+    min-height:400px;
+    border-radius:3px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    background:
+      radial-gradient(ellipse at 50% 42%, var(--accent-glow, rgba(181,138,74,0.15)), transparent 70%),
+      linear-gradient(155deg, #1c1714, #0e0c0b 75%);
+  }
+  .entry-visual img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    filter:brightness(0.85);
+  }
+  .entry-visual .visual-label{
+    position:absolute; left:14px; bottom:12px; right:14px;
+    display:flex; justify-content:space-between; gap:12px;
+    font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--parchment-dim);
+  }
+  .entry-visual .visual-label span:last-child{ color:var(--accent, var(--brass)); }
+
+  .entry-num{
+    display:block;
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    letter-spacing:0.14em;
+    color:var(--accent-bright, var(--brass-bright));
+    margin-bottom:14px;
+  }
+  .entry-info h2{
+    font-family:var(--font-display);
+    font-weight:340;
+    font-size:clamp(2rem, 3.6vw, 3rem);
+    line-height:1.04;
+    margin:0 0 18px;
+    color:var(--parchment);
+  }
+  .entry-info p{
+    color:var(--parchment-dim);
+    max-width:480px;
+    margin:0 0 22px;
+  }
+  .entry-specs{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--parchment-faint);
+    margin:0 0 30px;
+  }
+  .entry-actions{
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  }
+
+  .btn{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    text-decoration:none;
+    padding:13px 26px;
+    border-radius:2px;
+    border:1px solid var(--accent, var(--brass));
+    color:var(--parchment-dim);
+    transition:all 0.25s ease;
+    cursor:pointer;
+    background:none;
+    display:inline-block;
+  }
+  .btn:hover{
+    border-color:var(--accent-bright, var(--brass-bright));
+    color:var(--accent-bright, var(--brass-bright));
+  }
+  .tag{
+    display:inline-block;
+    font-family:var(--font-mono);
+    font-size:0.65rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    padding:6px 12px;
+    border:1px solid var(--line-strong);
+    border-radius:2px;
+    color:var(--parchment-dim);
+  }
+  .tag.available{
+    border-color:var(--accent, var(--brass));
+    color:var(--accent-bright, var(--brass-bright));
+  }
+
+  @media (max-width:860px){
+    .entry{ grid-template-columns:1fr; gap:28px; padding:64px 0; }
+    .entry:nth-of-type(even) .entry-visual{ order:0; }
+    .entry-visual{ min-height:280px; }
+  }
+
+  /* ---------- GROW CTA ---------- */
+  .grow{
+    text-align:center;
+    padding:150px 0;
+    border-top:1px solid var(--line);
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(181,138,74,0.10), transparent 60%),
+      var(--void);
+  }
+  .grow h2{
+    font-family:var(--font-display); font-weight:340;
+    font-size:clamp(2rem, 4.4vw, 3.2rem);
+    margin:14px 0 20px;
+    color:var(--parchment);
+  }
+  .grow h2 i{ color:var(--brass-bright); font-style:italic; font-weight:300; }
+  .grow p{ color:var(--parchment-dim); max-width:520px; margin:0 auto 40px; }
+
+  /* ---------- FOOTER ---------- */
+  .footer{ padding:64px 0 40px; }
+  .footer-disclaimer{ font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.04em; line-height:1.7; color:var(--parchment-faint); max-width:640px; margin:0 0 24px; }
+  .footer-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+  .footer-bottom, .footer-bottom a{
+    font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.06em; color:var(--parchment-faint); text-decoration:none;
+  }
+
+  .reveal{ opacity:0; transform:translateY(24px); transition:opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:720px){
+    .page-head{ padding:140px 0 48px; }
+    .grow{ padding:100px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="nav" id="nav">
+  <a href="index.html" class="nav-mark">STEINBACH <span>INSTRUMENTS</span></a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li class="nav-item-drop">
+      <a href="instruments.html" class="active">Instruments<span class="caret">▾</span></a>
+      <ul class="nav-drop-menu">
+        <li><a href="historic-organ-concept.html">Historic Organ</a></li>
+        <li><a href="tine-piano.html">Tine Piano</a></li>
+        <li><a href="transistor-organ.html">Transistor Organ</a></li>
+        <li><a href="reed-piano.html">Reed Piano</a></li>
+      </ul>
+    </li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</header>
+
+<main id="top">
+
+  <section class="page-head">
+    <div class="wrap">
+      <div class="eyebrow reveal">The Collection</div>
+      <h1 class="reveal">An archive of <i>endangered sound.</i></h1>
+      <p class="reveal">Four instruments so far &mdash; each one recorded on location, voice by voice, and rebuilt as a playable instrument &mdash; for KONTAKT and as a standalone app. Every entry leads to the full story.</p>
+    </div>
+  </section>
+
+  <section class="entries">
+    <div class="wrap">
+
+      <article class="entry" style="--accent:#b58a4a; --accent-bright:#e8c078; --accent-glow:rgba(181,138,74,0.16);">
+        <div class="entry-visual reveal">
+          <img src="assets/images/organ.jpg" alt="The Röver organ, lit in the dark" loading="lazy" />
+          <div class="visual-label"><span>Plate 01 &middot; Heilig-Kreuz-Kirche</span><span>Bevern, DE</span></div>
+        </div>
+        <div class="entry-info reveal">
+          <span class="entry-num">No. 01 &middot; Pipe Organ &middot; 1900s</span>
+          <h2>Historic Organ</h2>
+          <p>A late-romantic German pipe organ, sampled register by register in the church it has inhabited for over a century &mdash; with the room&rsquo;s own acoustics built in. Play all 17 stops live in the browser, then take the full instrument home.</p>
+          <p class="entry-specs">17 stops &middot; Multi-mic &middot; 24-bit / 96 kHz &middot; KONTAKT 8+</p>
+          <div class="entry-actions">
+            <a class="btn" href="historic-organ-concept.html">View instrument</a>
+            <span class="tag available">Available</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" style="--accent:#c1782f; --accent-bright:#f2a860; --accent-glow:rgba(193,120,47,0.16);">
+        <div class="entry-visual reveal">
+          <div class="visual-label"><span>Plate 02 &middot; Awaiting photography</span><span>In production</span></div>
+        </div>
+        <div class="entry-info reveal">
+          <span class="entry-num">No. 02 &middot; Electric Piano &middot; 1970s</span>
+          <h2>Tine Piano</h2>
+          <p>The electric stage piano that carried the seventies: hammers striking metal tines over electromagnetic pickups. Sampled key by key across its full dynamic arc &mdash; from glassy pianissimo to growling bark.</p>
+          <p class="entry-specs">73 keys &middot; Velocity layers &middot; 24-bit / 96 kHz &middot; KONTAKT 8+</p>
+          <div class="entry-actions">
+            <a class="btn" href="tine-piano.html">View instrument</a>
+            <span class="tag">In production</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" style="--accent:#5fa8a0; --accent-bright:#93d9d0; --accent-glow:rgba(95,168,160,0.14);">
+        <div class="entry-visual reveal">
+          <img src="assets/images/philicorda-render.jpg" alt="The transistor organ, lit in the dark" loading="lazy" />
+          <div class="visual-label"><span>Plate 03 &middot; Transistor Organ</span><span>1960s</span></div>
+        </div>
+        <div class="entry-info reveal">
+          <span class="entry-num">No. 03 &middot; Home Organ &middot; 1960s</span>
+          <h2>Transistor Organ</h2>
+          <p>A 1960s home organ on slender steel legs: rocker tabs, built-in vibrato, and a tone somewhere between reed organ and space age. Designed as living-room furniture, remembered on garage and lounge records.</p>
+          <p class="entry-specs">Rocker tabs &middot; Vibrato on + off &middot; 24-bit / 96 kHz &middot; KONTAKT 8+</p>
+          <div class="entry-actions">
+            <a class="btn" href="transistor-organ.html">View instrument</a>
+            <span class="tag">In production</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" style="--accent:#c65947; --accent-bright:#f09a86; --accent-glow:rgba(198,89,71,0.14);">
+        <div class="entry-visual reveal">
+          <div class="visual-label"><span>Plate 04 &middot; Awaiting photography</span><span>In production</span></div>
+        </div>
+        <div class="entry-info reveal">
+          <span class="entry-num">No. 04 &middot; Reed Piano &middot; 1960s</span>
+          <h2>Reed Piano</h2>
+          <p>An electro-mechanical piano voiced by struck steel reeds: soft, it purrs like a vibraphone; hard, it barks. Every key sampled individually, with the built-in vibrato captured on and off.</p>
+          <p class="entry-specs">64 keys &middot; Vibrato on + off &middot; 24-bit / 96 kHz &middot; KONTAKT 8+</p>
+          <div class="entry-actions">
+            <a class="btn" href="reed-piano.html">View instrument</a>
+            <span class="tag">In production</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="grow">
+    <div class="wrap">
+      <div class="eyebrow reveal">The Archive Grows</div>
+      <h2 class="reveal">Which sound should <i>survive next?</i></h2>
+      <p class="reveal">Every year, playable instruments disappear &mdash; and with them, voices no recording ever captured in full. If you know an instrument worth preserving, we want to hear about it.</p>
+      <a href="contact.html" class="btn reveal" style="--accent:var(--brass); --accent-bright:var(--brass-bright);">Suggest an instrument</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="footer-disclaimer">All trademarks are the property of their respective owners and are used solely to identify the instruments that were sampled. No affiliation or endorsement is implied.</p>
+    <div class="footer-bottom">
+      <span>&copy; Steinbach Instruments &middot; Digital Heritage</span>
+      <span><a href="impressum.html">Legal Notice</a> &nbsp;&middot;&nbsp; <a href="datenschutz.html">Privacy Policy</a> &nbsp;&middot;&nbsp; <a href="#top">Back to top</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Nav background on scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive:true });
+
+  // Mobile menu toggle
+  const navToggle = document.getElementById('nav-toggle');
+  if (navToggle) {
+    navToggle.addEventListener('click', () => {
+      const open = nav.classList.toggle('menu-open');
+      document.body.classList.toggle('menu-open', open);
+      navToggle.setAttribute('aria-expanded', String(open));
+    });
+  }
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold:0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

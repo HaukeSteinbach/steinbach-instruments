@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Steinbach Instruments · Digital Heritage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --void:#0b0908;
+    --void-2:#141110;
+    --void-3:#1b1614;
+    --parchment:#ece3d1;
+    --parchment-dim:#b9ae98;
+    --parchment-faint:#83796a;
+    --brass:#b58a4a;
+    --brass-bright:#e8c078;
+    --line: rgba(236,227,209,0.12);
+    --line-strong: rgba(236,227,209,0.22);
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--void);
+    color:var(--parchment);
+    font-family:var(--font-body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{ color:inherit; }
+  img{ max-width:100%; display:block; }
+
+  ::selection{ background:var(--brass); color:var(--void); }
+
+  :focus-visible{
+    outline: 2px solid var(--brass-bright);
+    outline-offset: 3px;
+  }
+
+  /* film grain overlay */
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:200;
+    opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--brass);
+  }
+
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 clamp(20px, 5vw, 64px);
+  }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px clamp(20px, 5vw, 64px);
+    background:transparent;
+    border-bottom:1px solid transparent;
+    transition:background 0.4s ease, border-color 0.4s ease, padding 0.3s ease;
+  }
+  .nav.scrolled{
+    background:rgba(11,9,8,0.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    padding-top:14px; padding-bottom:14px;
+  }
+  .nav-mark{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--parchment);
+    text-decoration:none;
+  }
+  .nav-mark span{ color:var(--brass); }
+  .nav-links{
+    display:flex; gap:clamp(16px,3vw,36px);
+    list-style:none; margin:0; padding:0;
+  }
+  .nav-links a{
+    font-family:var(--font-mono);
+    font-size:0.7rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:var(--parchment-dim);
+    transition:color 0.25s ease;
+  }
+  .nav-links a:hover{ color:var(--brass-bright); }
+  .nav-links a.active{ color:var(--brass-bright); }
+  @media (max-width:720px){ .nav-links{ display:none; } }
+
+  /* Mobile nav (burger) */
+  .nav-toggle{
+    display:none;
+    flex-direction:column; justify-content:center; align-items:center; gap:5px;
+    width:40px; height:36px;
+    background:none; border:none; padding:0;
+    cursor:pointer;
+    position:relative; z-index:2;
+  }
+  .nav-toggle span{
+    display:block; width:22px; height:1.5px;
+    background:var(--parchment);
+    transition:transform 0.3s ease, opacity 0.3s ease;
+  }
+  .nav.menu-open .nav-toggle span:nth-child(1){ transform:translateY(6.5px) rotate(45deg); }
+  .nav.menu-open .nav-toggle span:nth-child(2){ opacity:0; }
+  .nav.menu-open .nav-toggle span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
+  @media (max-width:720px){
+    .nav-toggle{ display:flex; }
+    .nav-mark{ position:relative; z-index:2; }
+    .nav.menu-open{ backdrop-filter:none; -webkit-backdrop-filter:none; }
+    .nav.menu-open .nav-links{
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:26px;
+      position:fixed; inset:0;
+      background:rgba(11,9,8,0.97);
+      backdrop-filter:blur(10px);
+    }
+    .nav.menu-open .nav-links a{ font-size:0.95rem; letter-spacing:0.16em; }
+    .nav.menu-open .nav-item-drop{ text-align:center; }
+    .nav.menu-open .nav-item-drop > a .caret{ display:none; }
+    .nav.menu-open .nav-drop-menu,
+    .nav.menu-open .nav-item-drop:hover .nav-drop-menu,
+    .nav.menu-open .nav-item-drop:focus-within .nav-drop-menu{
+      position:static; transform:none;
+      opacity:1; visibility:visible;
+      min-width:0; border:none; background:none; backdrop-filter:none;
+      padding:14px 0 0;
+      display:flex; flex-direction:column; align-items:center; gap:16px;
+    }
+    .nav.menu-open .nav-drop-menu::before{ display:none; }
+    .nav.menu-open .nav-drop-menu a{ font-size:0.78rem; color:var(--parchment-faint); padding:0; }
+    .nav.menu-open .nav-drop-menu a.current{ color:var(--brass-bright); }
+    body.menu-open{ overflow:hidden; }
+  }
+
+  /* Instruments dropdown */
+  .nav-item-drop{ position:relative; }
+  .nav-item-drop > a .caret{
+    display:inline-block; font-size:0.55rem; margin-left:5px;
+    transform:translateY(-1px);
+  }
+  .nav-drop-menu{
+    position:absolute; top:calc(100% + 12px); left:50%;
+    transform:translateX(-50%) translateY(-4px);
+    min-width:190px;
+    background:rgba(11,9,8,0.96);
+    backdrop-filter:blur(8px);
+    border:1px solid var(--line);
+    border-radius:3px;
+    list-style:none; margin:0; padding:6px 0;
+    opacity:0; visibility:hidden;
+    transition:opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  .nav-drop-menu::before{
+    content:""; position:absolute; top:-14px; left:0; right:0; height:14px;
+  }
+  .nav-item-drop:hover .nav-drop-menu,
+  .nav-item-drop:focus-within .nav-drop-menu{
+    opacity:1; visibility:visible;
+    transform:translateX(-50%) translateY(0);
+  }
+  .nav-drop-menu a{ display:block; padding:10px 18px; white-space:nowrap; }
+  .nav-drop-menu a.current{ color:var(--brass-bright); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-img{
+    position:absolute; top:0; bottom:0; left:50%;
+    width:calc(100svh * 1.361); /* image aspect ratio 2722x2000 */
+    max-width:100%;
+    transform:translateX(-50%);
+    background:url("assets/images/organ.jpg") center top / cover no-repeat;
+    filter:brightness(0.55);
+    -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+    mask-image:linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  }
+  .hero-bg{
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(11,9,8,0.45) 0%, rgba(11,9,8,0.2) 42%, rgba(11,9,8,0.55) 72%, var(--void) 100%),
+      radial-gradient(ellipse at 50% 30%, rgba(181,138,74,0.10), transparent 55%);
+  }
+  .hero-bg::after{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(90deg, transparent 0 46px, rgba(236,227,209,0.025) 46px 47px);
+    opacity:0.6;
+  }
+  .hero-beam{
+    position:absolute; top:-12%; left:-8%; width:160%; height:170%;
+    transform-origin:0% 0%;
+    background:conic-gradient(from 0deg at 0% 0%,
+      transparent 98deg,
+      rgba(232,192,120,0.025) 116deg,
+      rgba(232,192,120,0.06) 135deg,
+      rgba(232,192,120,0.025) 154deg,
+      transparent 172deg);
+    mix-blend-mode:screen;
+    -webkit-mask-image:linear-gradient(180deg, #000 0%, #000 28%, transparent 57%);
+    mask-image:linear-gradient(180deg, #000 0%, #000 28%, transparent 57%);
+    animation:spotlight 14s ease-in-out infinite alternate;
+  }
+  @keyframes spotlight{
+    from{ transform:rotate(-7deg); }
+    to{ transform:rotate(7deg); }
+  }
+
+  .hero-content{
+    position:relative; z-index:2;
+    width:100%;
+    max-width:1180px;
+    margin:0 auto;
+    padding:140px clamp(20px,5vw,64px) 100px;
+    text-align:center;
+  }
+  .hero h1{
+    font-family:var(--font-display);
+    font-optical-sizing:auto;
+    font-weight:340;
+    font-size:clamp(3.2rem, 10vw, 8.5rem);
+    line-height:0.95;
+    letter-spacing:-0.01em;
+    margin:0 0 34px;
+    color:var(--parchment);
+    text-shadow:0 2px 30px rgba(11,9,8,0.65), 0 0 90px rgba(11,9,8,0.55);
+  }
+  .hero h1 em{
+    font-style:italic;
+    font-weight:300;
+    color:var(--brass-bright);
+    display:block;
+  }
+  .hero-sub{
+    font-family:var(--font-mono);
+    font-size:0.82rem;
+    letter-spacing:0.08em;
+    color:var(--parchment-dim);
+    margin:0 0 44px;
+    text-shadow:0 1px 14px rgba(11,9,8,0.9), 0 0 30px rgba(11,9,8,0.8);
+  }
+  .hero-actions{ display:flex; flex-wrap:wrap; gap:16px; justify-content:center; }
+
+  .btn{
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    text-decoration:none;
+    padding:15px 30px;
+    border-radius:2px;
+    border:1px solid var(--brass);
+    transition:all 0.25s ease;
+    cursor:pointer;
+    background:none;
+    display:inline-block;
+  }
+  .btn-fill{
+    background:linear-gradient(180deg, var(--brass-bright), var(--brass));
+    color:var(--void);
+    border-color:transparent;
+  }
+  .btn-fill:hover{ filter:brightness(1.12); transform:translateY(-1px); }
+  .btn-ghost{ color:var(--parchment-dim); }
+  .btn-ghost:hover{ border-color:var(--brass-bright); color:var(--brass-bright); }
+
+  /* ---------- SECTION GENERIC ---------- */
+  .section{ padding:140px 0; border-bottom:1px solid var(--line); }
+  .section-head{ max-width:640px; margin-bottom:64px; }
+  .section-head h2{
+    font-family:var(--font-display);
+    font-weight:340;
+    font-size:clamp(2rem, 4.2vw, 3.1rem);
+    line-height:1.08;
+    margin:16px 0 0;
+    color:var(--parchment);
+  }
+  .section-head h2 i{ color:var(--brass-bright); font-style:italic; font-weight:300; }
+
+  /* ---------- MANIFESTO ---------- */
+  .manifesto{ background:var(--void-2); }
+  .manifesto-inner{
+    max-width:820px;
+    margin:0 auto;
+    border-left:2px solid var(--brass);
+    padding-left:clamp(24px, 4vw, 44px);
+  }
+  .manifesto-text{
+    font-family:var(--font-display);
+    font-weight:340;
+    font-size:clamp(1.4rem, 2.6vw, 2rem);
+    line-height:1.45;
+    color:var(--parchment-dim);
+  }
+  .manifesto-text strong{ color:var(--parchment); font-weight:400; }
+  .manifesto-text em{ color:var(--brass-bright); font-style:italic; font-weight:300; }
+  .manifesto-fine{
+    margin-top:40px;
+    font-family:var(--font-mono);
+    font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--parchment-faint);
+  }
+
+  /* ---------- COLLECTION (stacked full-width exhibits) ---------- */
+  .collection-section{ padding:0; }
+  .collection-label{
+    display:flex; justify-content:center; align-items:baseline; gap:14px; flex-wrap:wrap;
+    padding:26px 20px;
+    font-family:var(--font-mono);
+    font-size:0.7rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    text-align:center;
+    color:var(--parchment-faint);
+  }
+  .collection-label b{ color:var(--brass); font-weight:500; }
+  .collection-exhibits{
+    border-top:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    height:132svh;
+  }
+  .collection-exhibit{
+    position:relative;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    flex:1 1 0;
+    min-height:0;
+    overflow:hidden;
+    text-decoration:none;
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(ellipse at 50% 42%, var(--accent-glow, rgba(181,138,74,0.14)), transparent 68%),
+      var(--void);
+    transition:flex-grow 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* .reveal would otherwise override the transition list on these links */
+  a.collection-exhibit{
+    transition:flex-grow 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, transform 0.8s ease;
+  }
+  .collection-exhibit:hover{ flex-grow:1.3; }
+  .collection-exhibit:last-child{ border-bottom:none; }
+  .exhibit-img{
+    position:absolute; inset:0;
+    background-position:center 43%;
+    background-size:cover;
+    background-repeat:no-repeat;
+    -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+    mask-image:linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+    filter:brightness(0.5);
+    transition:filter 0.7s ease;
+  }
+  .collection-exhibit:hover .exhibit-img{ filter:brightness(0.72); }
+  .exhibit-scrim{
+    position:absolute; left:0; right:0; bottom:0; height:70%;
+    background:linear-gradient(180deg, transparent, rgba(11,9,8,0.85));
+    pointer-events:none;
+  }
+  .exhibit-info{
+    position:relative; z-index:2;
+    text-align:center;
+    padding:56px 24px 40px;
+  }
+  .exhibit-num{
+    display:block;
+    font-family:var(--font-mono);
+    font-size:0.7rem;
+    letter-spacing:0.14em;
+    color:var(--accent-bright, var(--brass-bright));
+    margin-bottom:12px;
+  }
+  .exhibit-info h3{
+    font-family:var(--font-display);
+    font-weight:340;
+    font-size:clamp(2.2rem, 4.5vw, 3.8rem);
+    line-height:0.98;
+    margin:0 0 16px;
+    color:var(--parchment);
+    text-shadow:0 2px 30px rgba(11,9,8,0.6);
+    transition:color 0.3s ease;
+  }
+  .collection-exhibit:hover .exhibit-info h3{ color:var(--accent-bright, var(--brass-bright)); }
+  .collection-tag{
+    display:inline-block;
+    font-family:var(--font-mono);
+    font-size:0.65rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    padding:6px 12px;
+    border:1px solid var(--line-strong);
+    border-radius:2px;
+    color:var(--parchment-dim);
+    background:rgba(11,9,8,0.5);
+  }
+  .collection-tag.available{
+    border-color:var(--accent, var(--brass));
+    color:var(--accent-bright, var(--brass-bright));
+  }
+  @media (max-width:720px){
+    .collection-exhibits{ height:auto; }
+    .collection-exhibit{ flex:none; min-height:220px; }
+    .exhibit-info{ padding:40px 20px 32px; }
+  }
+
+  /* ---------- METHOD ---------- */
+  .method{ background:var(--void-2); }
+  .method-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:0;
+    border:1px solid var(--line);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .method-step{
+    padding:34px 30px;
+    border-right:1px solid var(--line);
+    background:var(--void-3);
+  }
+  .method-step:last-child{ border-right:none; }
+  @media (max-width:980px){
+    .method-step{ border-right:none; border-bottom:1px solid var(--line); }
+    .method-step:last-child{ border-bottom:none; }
+  }
+  .method-step .num{
+    font-family:var(--font-mono); font-size:0.78rem; color:var(--brass);
+    display:block; margin-bottom:16px;
+  }
+  .method-step h3{
+    font-family:var(--font-display); font-weight:400; font-size:1.2rem;
+    margin:0 0 8px; color:var(--parchment);
+  }
+  .method-step p{
+    margin:0; font-size:0.9rem; color:var(--parchment-dim);
+  }
+
+  /* ---------- ABOUT TEASER ---------- */
+  .about-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:stretch;
+  }
+  .about-text p{ color:var(--parchment-dim); max-width:520px; }
+  .about-text .btn{ margin-top:20px; }
+  .plate{
+    position:relative;
+    border-radius:3px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(181,138,74,0.14), transparent 60%),
+      linear-gradient(155deg, #211b17, #0e0c0b 70%);
+    border:1px solid var(--line);
+    min-height:320px;
+  }
+  .plate::before{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 5px);
+  }
+  .plate-label{
+    position:absolute; left:14px; bottom:14px; right:14px;
+    z-index:2;
+    display:flex; justify-content:space-between; gap:12px;
+    font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.08em;
+    color:var(--parchment-dim); text-transform:uppercase;
+  }
+  .plate-label span:last-child{ color:var(--brass); text-align:right; }
+  @media (max-width:860px){ .about-grid{ grid-template-columns:1fr; gap:32px; } }
+
+  /* ---------- CTA ---------- */
+  .cta{
+    text-align:center; padding:160px 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(181,138,74,0.12), transparent 60%),
+      var(--void);
+  }
+  .cta h2{
+    font-family:var(--font-display); font-weight:340;
+    font-size:clamp(2.2rem, 5vw, 3.6rem); margin:14px 0 20px;
+  }
+  .cta p{ color:var(--parchment-dim); max-width:520px; margin:0 auto 40px; }
+  .cta-fine{ margin-top:40px; font-family:var(--font-mono); font-size:0.7rem; color:var(--parchment-faint); letter-spacing:0.04em; }
+
+  /* ---------- FOOTER ---------- */
+  .footer{ padding:64px 0 40px; }
+  .footer-disclaimer{ font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.04em; line-height:1.7; color:var(--parchment-faint); max-width:640px; margin:0 0 24px; }
+  .footer-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+  .footer-bottom, .footer-bottom a{
+    font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.06em; color:var(--parchment-faint); text-decoration:none;
+  }
+
+  .reveal{ opacity:0; transform:translateY(24px); transition:opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:720px){
+    .section{ padding:88px 0; }
+    .collection-section{ padding:0; }
+    .cta{ padding:100px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="nav" id="nav">
+  <a href="index.html" class="nav-mark">STEINBACH <span>INSTRUMENTS</span></a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li class="nav-item-drop">
+      <a href="instruments.html">Instruments<span class="caret">▾</span></a>
+      <ul class="nav-drop-menu">
+        <li><a href="historic-organ-concept.html">Historic Organ</a></li>
+        <li><a href="tine-piano.html">Tine Piano</a></li>
+        <li><a href="transistor-organ.html">Transistor Organ</a></li>
+        <li><a href="reed-piano.html">Reed Piano</a></li>
+      </ul>
+    </li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="hero-img"></div>
+    <div class="hero-bg"></div>
+    <div class="hero-beam"></div>
+    <div class="hero-content">
+      <h1>Instruments,<em>remembered.</em></h1>
+      <p class="hero-sub">Steinbach Instruments · Digital Heritage · Sample instruments</p>
+      <div class="hero-actions">
+        <a href="#collection" class="btn btn-fill">Explore the collection</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section manifesto">
+    <div class="wrap">
+      <div class="manifesto-inner">
+        <div class="eyebrow reveal">Why We Do This</div>
+        <p class="manifesto-text reveal" style="margin-top:28px;">
+          Instruments die quietly. Reeds snap, pipes fall silent, transistors drift &mdash;
+          and the people who could repair them are becoming as rare as the instruments themselves.
+          <strong>We record them before that happens:</strong> on location, register by register,
+          key by key. Then we build them into playable instruments,
+          <em>so their voices outlive the hardware.</em>
+        </p>
+        <p class="manifesto-fine reveal">Recorded on location &middot; KONTAKT &amp; standalone &middot; Instruments worth keeping</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section collection-section" id="collection">
+    <div class="collection-label">
+      <b>The Collection</b><span>Four instruments &middot; No. 01&ndash;04</span>
+    </div>
+
+    <div class="collection-exhibits">
+
+      <a class="collection-exhibit reveal" href="historic-organ-concept.html"
+         style="--accent:#b58a4a; --accent-bright:#e8c078; --accent-glow:rgba(181,138,74,0.16);">
+        <div class="exhibit-img" style="background-image:url('assets/images/organ.jpg')" role="img" aria-label="The Röver organ, lit in the dark"></div>
+        <div class="exhibit-scrim"></div>
+        <div class="exhibit-info">
+          <span class="exhibit-num">No. 01</span>
+          <h3>Historic Organ</h3>
+          <span class="collection-tag available">Available</span>
+        </div>
+      </a>
+
+      <a class="collection-exhibit reveal" href="tine-piano.html"
+         style="--accent:#c1782f; --accent-bright:#f2a860; --accent-glow:rgba(193,120,47,0.16);">
+        <div class="exhibit-scrim"></div>
+        <div class="exhibit-info">
+          <span class="exhibit-num">No. 02</span>
+          <h3>Tine Piano</h3>
+          <span class="collection-tag">In production</span>
+        </div>
+      </a>
+
+      <a class="collection-exhibit reveal" href="transistor-organ.html"
+         style="--accent:#5fa8a0; --accent-bright:#93d9d0; --accent-glow:rgba(95,168,160,0.14);">
+        <div class="exhibit-img" style="background-image:url('assets/images/philicorda-render.jpg')" role="img" aria-label="The transistor organ, lit in the dark"></div>
+        <div class="exhibit-scrim"></div>
+        <div class="exhibit-info">
+          <span class="exhibit-num">No. 03</span>
+          <h3>Transistor Organ</h3>
+          <span class="collection-tag">In production</span>
+        </div>
+      </a>
+
+      <a class="collection-exhibit reveal" href="reed-piano.html"
+         style="--accent:#c65947; --accent-bright:#f09a86; --accent-glow:rgba(198,89,71,0.14);">
+        <div class="exhibit-scrim"></div>
+        <div class="exhibit-info">
+          <span class="exhibit-num">No. 04</span>
+          <h3>Reed Piano</h3>
+          <span class="collection-tag">In production</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="section method">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">The Method</div>
+        <h2>How an instrument <i>survives.</i></h2>
+      </div>
+      <div class="method-grid reveal">
+        <div class="method-step">
+          <span class="num">01</span>
+          <h3>On location</h3>
+          <p>Recorded where the instrument lives &mdash; its room, its acoustics, its atmosphere included.</p>
+        </div>
+        <div class="method-step">
+          <span class="num">02</span>
+          <h3>Voice by voice</h3>
+          <p>Every register, key and switch position captured in isolation, at 24-bit / 96 kHz.</p>
+        </div>
+        <div class="method-step">
+          <span class="num">03</span>
+          <h3>Faithfully mapped</h3>
+          <p>Built into KONTAKT and standalone instruments with a GUI that mirrors the original panel.</p>
+        </div>
+        <div class="method-step">
+          <span class="num">04</span>
+          <h3>Released &amp; preserved</h3>
+          <p>Published as a permanent archive &mdash; for artists, producers and researchers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <div class="eyebrow">Behind The Project</div>
+          <h2 style="font-family:var(--font-display); font-weight:340; font-size:clamp(2rem,4vw,3rem); margin:16px 0 26px;">Two people. <i style="color:var(--brass-bright); font-style:italic; font-weight:300;">One archive.</i></h2>
+          <p>Steinbach Instruments is a two-person project: an audio engineer and a 3D artist, recording endangered instruments and turning them into software &mdash; carefully, one instrument at a time.</p>
+          <a href="about.html" class="btn btn-ghost">About us</a>
+        </div>
+        <div class="plate reveal">
+          <div class="plate-label"><span>Plate 05 &middot; The workshop</span><span>Awaiting photography</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap">
+      <div class="eyebrow reveal">Start Here</div>
+      <h2 class="reveal">Get the Historic Organ.</h2>
+      <p class="reveal">The first instrument of the collection is finished: a late-romantic German church organ, all 17 stops, with its own room sound. Play it in the browser, then take it home.</p>
+      <a href="historic-organ-concept.html" class="btn btn-fill reveal">Explore the Historic Organ</a>
+      <div class="cta-fine reveal">For KONTAKT 8+ &middot; Standalone app &middot; macOS &middot; Apple Silicon</div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="footer-disclaimer">All trademarks are the property of their respective owners and are used solely to identify the instruments that were sampled. No affiliation or endorsement is implied.</p>
+    <div class="footer-bottom">
+      <span>&copy; Steinbach Instruments &middot; Digital Heritage</span>
+      <span><a href="impressum.html">Legal Notice</a> &nbsp;&middot;&nbsp; <a href="datenschutz.html">Privacy Policy</a> &nbsp;&middot;&nbsp; <a href="#top">Back to top</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Nav background on scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive:true });
+
+  // Mobile menu toggle
+  const navToggle = document.getElementById('nav-toggle');
+  if (navToggle) {
+    navToggle.addEventListener('click', () => {
+      const open = nav.classList.toggle('menu-open');
+      document.body.classList.toggle('menu-open', open);
+      navToggle.setAttribute('aria-expanded', String(open));
+    });
+  }
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold:0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
