@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Historic Organ · Steinbach Instruments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/styles.css" />
+<style>
+  :root{
+    --void:#0b0908;
+    --void-2:#141110;
+    --void-3:#1b1614;
+    --oxblood:#2b1116;
+    --oxblood-2:#3a161d;
+    --parchment:#ece3d1;
+    --parchment-dim:#b9ae98;
+    --parchment-faint:#83796a;
+    --brass:#b58a4a;
+    --brass-bright:#e8c078;
+    --slate:#6b7480;
+    --line: rgba(236,227,209,0.12);
+    --line-strong: rgba(236,227,209,0.22);
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  
+
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    display:flex;
+    align-items:flex-end;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-img{
+    position:absolute; top:0; bottom:0; left:50%;
+    width:calc(100svh * 1.361); /* image aspect ratio 2722x2000 */
+    max-width:100%;
+    transform:translateX(-50%);
+    background:url("assets/images/organ.jpg") center top / cover no-repeat;
+    -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+    mask-image:linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  }
+  .hero-bg{
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(11,9,8,0.35) 0%, rgba(11,9,8,0.05) 36%, rgba(11,9,8,0.18) 45%, rgba(11,9,8,0.88) 72%, var(--void) 90%, var(--void) 100%),
+      radial-gradient(ellipse at 50% 20%, rgba(181,138,74,0.10), transparent 55%);
+  }
+  .hero-bg::after{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(90deg, transparent 0 46px, rgba(236,227,209,0.025) 46px 47px);
+    opacity:0.6;
+  }
+  .hero-beam{
+    position:absolute; top:-12%; left:-8%; width:160%; height:170%;
+    transform-origin:0% 0%;
+    background:conic-gradient(from 0deg at 0% 0%,
+      transparent 98deg,
+      rgba(232,192,120,0.025) 116deg,
+      rgba(232,192,120,0.06) 135deg,
+      rgba(232,192,120,0.025) 154deg,
+      transparent 172deg);
+    mix-blend-mode:screen;
+    -webkit-mask-image:linear-gradient(180deg, #000 0%, #000 28%, transparent 57%);
+    mask-image:linear-gradient(180deg, #000 0%, #000 28%, transparent 57%);
+    animation:spotlight 14s ease-in-out infinite alternate;
+  }
+  @keyframes spotlight{
+    from{ transform:rotate(-7deg); }
+    to{ transform:rotate(7deg); }
+  }
+
+  .hero-content{
+    position:relative; z-index:2;
+    width:100%;
+    max-width:1180px;
+    margin:0 auto;
+    padding:120px clamp(20px,5vw,64px) 88px;
+    text-align:center;
+    display:flex; flex-direction:column;
+    justify-content:flex-end;
+    min-height:100svh;
+  }
+  .hero h1{
+    font-family:var(--font-display);
+    font-optical-sizing:auto;
+    font-weight:340;
+    font-size:clamp(4rem, 11vw, 10rem);
+    line-height:0.92;
+    letter-spacing:-0.01em;
+    white-space:nowrap;
+    margin:0 0 28px;
+    color:var(--parchment);
+    text-shadow:0 2px 30px rgba(11,9,8,0.6), 0 0 90px rgba(11,9,8,0.5);
+  }
+  .hero h1 em{
+    font-style:italic;
+    font-weight:300;
+    color:var(--brass-bright);
+  }
+  @media (max-width:719px){
+    .hero h1{ white-space:normal; font-size:clamp(3rem, 15vw, 5.5rem); }
+  }
+  .hero-sub{
+    font-family:var(--font-mono);
+    font-size:0.82rem;
+    letter-spacing:0.05em;
+    color:var(--parchment-dim);
+    margin:0 0 38px;
+  }
+  .hero-actions{ display:flex; flex-wrap:wrap; gap:16px; justify-content:center; }
+
+  .btn{
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    text-decoration:none;
+    padding:15px 30px;
+    border-radius:2px;
+    border:1px solid var(--brass);
+    transition:all 0.25s ease;
+    cursor:pointer;
+    background:none;
+  }
+  .btn-fill{
+    background:linear-gradient(180deg, var(--brass-bright), var(--brass));
+    color:var(--void);
+    border-color:transparent;
+  }
+  .btn-fill:hover{ filter:brightness(1.12); transform:translateY(-1px); }
+  .btn-ghost{ color:var(--parchment-dim); }
+  .btn-ghost:hover{ border-color:var(--brass-bright); color:var(--brass-bright); }
+  .btn-disabled{
+    background:rgba(236,227,209,0.07);
+    border-color:transparent;
+    color:var(--parchment-faint);
+    cursor:not-allowed;
+  }
+  .btn-disabled:hover{ transform:none; filter:none; }
+
+  /* ---------- SECTION GENERIC ---------- */
+  .section{ padding:140px 0; border-bottom:1px solid var(--line); }
+  .section-head{ max-width:640px; margin-bottom:64px; }
+  .section-head h2,
+  .rank-copy h2{
+    font-family:var(--font-display);
+    font-weight:340;
+    font-size:clamp(2rem, 4.2vw, 3.1rem);
+    line-height:1.08;
+    margin:16px 0 0;
+    color:var(--parchment);
+  }
+  .section-head h2 i,
+  .rank-copy h2 i{ color:var(--brass-bright); font-style:italic; font-weight:300; }
+
+  /* ---------- RANK / SIGNATURE INTERACTIVE ---------- */
+  .rank-section{ background:var(--void-2); }
+  .rank-copy{ max-width:620px; margin-bottom:56px; }
+  .rank-copy p{ color:var(--parchment-dim); }
+
+  .rank-stage{
+    background:var(--void-3);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:clamp(24px,4vw,56px) clamp(16px,4vw,48px) 32px;
+  }
+  .rank-divisions{
+    display:flex; gap:clamp(20px,4vw,52px);
+    align-items:flex-end;
+    overflow-x:auto;
+    padding-bottom:14px;
+    scrollbar-width:thin;
+  }
+  .division{
+    display:flex; flex-direction:column; align-items:center; flex:0 0 auto;
+  }
+  .division-pipes{
+    display:flex; align-items:flex-end; gap:6px;
+    height:250px;
+  }
+  .pipe{
+    width:20px;
+    border:none;
+    border-radius:3px 3px 1px 1px;
+    background:linear-gradient(180deg, #4b3a26, #241b12);
+    cursor:pointer;
+    position:relative;
+    transition:background 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+  }
+  .pipe:hover{ transform:translateY(-2px); }
+  .pipe.active{
+    background:linear-gradient(180deg, var(--brass-bright), var(--brass) 60%, #7a5a2c);
+    box-shadow:0 0 18px rgba(232,192,120,0.45), 0 0 3px rgba(232,192,120,0.8);
+  }
+  .pipe .label{
+    position:absolute; bottom:calc(100% + 10px); left:50%;
+    transform:translateX(-50%);
+    font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.03em;
+    color:var(--parchment); white-space:nowrap;
+    background:var(--void); border:1px solid var(--line-strong);
+    padding:4px 7px; border-radius:2px;
+    opacity:0; pointer-events:none; transition:opacity 0.2s ease;
+    z-index:5;
+  }
+  .pipe:hover .label, .pipe:focus-visible .label{ opacity:1; }
+  .division-name{
+    margin-top:16px;
+    font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--parchment-faint);
+  }
+
+  .rank-controls{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+    gap:18px; margin-top:34px; padding-top:24px; border-top:1px solid var(--line);
+  }
+  .rank-status{ display:flex; gap:26px; flex-wrap:wrap; }
+  .rank-status div{ font-family:var(--font-mono); font-size:0.72rem; color:var(--parchment-dim); }
+  .rank-status b{ color:var(--brass-bright); font-weight:500; }
+  .rank-buttons{ display:flex; gap:12px; }
+  .rank-buttons button{ font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; }
+  .btn-small{ padding:10px 18px; font-size:0.68rem; }
+  .btn-play.is-playing{ background:linear-gradient(180deg, var(--brass-bright), var(--brass)); color:var(--void); border-color:transparent; }
+
+  /* ---------- ORGAN DEMO (sprite console + Web Audio) ---------- */
+  .rank-stage-demo{ padding:0; overflow:hidden; }
+  .organ-loading-bar{
+    height:1px; background:rgba(236,227,209,0.08); overflow:hidden;
+  }
+  .organ-loading-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg, var(--brass), var(--brass-bright));
+    transition:width 0.3s ease, opacity 0.5s ease;
+  }
+
+  .organ-canvas-wrapper{ width:100%; }
+  .organ-canvas-scaler{ width:100%; overflow:hidden; position:relative; }
+  .organ-canvas{
+    width:1000px; height:566px; position:relative; overflow:hidden;
+    transform-origin:top left;
+  }
+  .organ-bg{
+    position:absolute; width:1000px; max-width:none; height:1906px; top:-95px; left:0;
+    pointer-events:none; user-select:none; display:block;
+  }
+
+  .organ-stop-btn{
+    position:absolute; width:43px; height:55px;
+    border:none; padding:0; margin:0;
+    background-color:transparent; background-repeat:no-repeat;
+    background-size:43px 330px; background-position:0 0;
+    cursor:pointer;
+    filter:brightness(0.55) saturate(0.3);
+    transition:filter 0.13s ease;
+    outline:none; -webkit-tap-highlight-color:transparent;
+  }
+  .organ-stop-btn:hover{ filter:brightness(0.8) saturate(0.6); }
+  .organ-stop-btn.active{
+    background-position:0 -275px;  /* frame 5 */
+    filter:brightness(1) saturate(1);
+  }
+  .organ-stop-btn:focus-visible{
+    outline:2px solid var(--brass-bright); outline-offset:2px; border-radius:3px;
+  }
+  .organ-controls-bar{
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+    padding:16px 20px 18px; border-top:1px solid var(--line);
+    background:var(--void-2);
+  }
+  .organ-play-btn:disabled{
+    opacity:0.4; cursor:not-allowed; transform:none; filter:none;
+  }
+  .organ-vol-group{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--font-mono); font-size:0.72rem; color:var(--parchment-dim);
+  }
+  .organ-vol-group input[type="range"]{
+    -webkit-appearance:none; appearance:none;
+    width:76px; height:3px; border-radius:2px;
+    background:rgba(236,227,209,0.18);
+    outline:none; cursor:pointer;
+  }
+  .organ-vol-group input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:12px; height:12px; border-radius:50%;
+    background:var(--brass-bright); cursor:pointer;
+  }
+  .organ-vol-group input[type="range"]::-moz-range-thumb{
+    width:12px; height:12px; border-radius:50%;
+    background:var(--brass-bright); border:none; cursor:pointer;
+  }
+  .organ-status-text{
+    margin-left:auto;
+    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.04em;
+    color:var(--parchment-faint);
+  }
+
+  /* ---------- FEATURES ---------- */
+  .feature-row{
+    display:grid; grid-template-columns:120px 1fr; gap:32px;
+    padding:36px 0; border-top:1px solid var(--line);
+  }
+  .feature-row:last-child{ border-bottom:1px solid var(--line); }
+  .feature-num{
+    font-family:var(--font-mono); color:var(--brass); font-size:0.85rem; padding-top:4px;
+  }
+  .feature-row h3{
+    font-family:var(--font-display); font-weight:400; font-size:1.5rem; margin:0 0 10px;
+    color:var(--parchment);
+  }
+  .feature-row p{ margin:0; color:var(--parchment-dim); max-width:640px; }
+  @media (max-width:640px){ .feature-row{ grid-template-columns:1fr; gap:8px; } }
+
+  /* ---------- PLATE (image placeholder, archival style) ---------- */
+  .plate{
+    position:relative;
+    border-radius:3px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(181,138,74,0.14), transparent 60%),
+      linear-gradient(155deg, #211b17, #0e0c0b 70%);
+    border:1px solid var(--line);
+    min-height:260px;
+  }
+  .plate::before{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 5px);
+  }
+  .plate-photo{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    filter:saturate(0.85) contrast(1.02);
+  }
+  .plate::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:45%;
+    background:linear-gradient(180deg, transparent, rgba(11,9,8,0.75));
+    pointer-events:none;
+  }
+  .plate-label{
+    position:absolute; left:14px; bottom:14px; right:14px;
+    z-index:2;
+    display:flex; justify-content:space-between; gap:12px;
+    font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.08em;
+    color:var(--parchment-dim); text-transform:uppercase;
+  }
+  .plate-label span:last-child{ color:var(--brass); text-align:right; }
+
+  /* ---------- INSTRUMENT STORY ---------- */
+  .instrument{ background:var(--oxblood); border-bottom:1px solid var(--line); }
+  .instrument-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:stretch;
+  }
+  .instrument-text p{ color:#e7d3c9; }
+  .instrument-text strong{ color:var(--parchment); }
+  .pull-quote{
+    font-family:var(--font-display); font-style:italic; font-weight:300;
+    font-size:1.4rem; line-height:1.4; color:var(--brass-bright);
+    margin:34px 0 0; padding-left:22px; border-left:2px solid var(--brass);
+  }
+  .instrument .plate{ min-height:420px; }
+  @media (max-width:860px){ .instrument-grid{ grid-template-columns:1fr; } .instrument .plate{ min-height:280px; } }
+
+  /* ---------- GALLERY ---------- */
+  .gallery-grid{
+    display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:18px;
+  }
+  .gallery-grid .plate:first-child{ min-height:440px; }
+  .gallery-grid .plate{ min-height:210px; }
+  @media (max-width:760px){ .gallery-grid{ grid-template-columns:1fr; } .gallery-grid .plate:first-child{ min-height:260px; } }
+
+  /* ---------- SPECS ---------- */
+  .specs{ background:var(--void-2); }
+  .spec-table{ border-top:1px solid var(--line); }
+  .spec-row{
+    display:grid; grid-template-columns:220px 1fr 1fr;
+    gap:20px; padding:22px 0; border-bottom:1px solid var(--line);
+    align-items:baseline;
+  }
+  .spec-label{ font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--brass); }
+  .spec-value{ font-family:var(--font-display); font-size:1.25rem; font-weight:400; color:var(--parchment); }
+  .spec-sub{ font-family:var(--font-mono); font-size:0.78rem; color:var(--parchment-faint); text-align:right; }
+  @media (max-width:640px){
+    .spec-row{ grid-template-columns:1fr; gap:4px; }
+    .spec-sub{ text-align:left; }
+  }
+
+  /* ---------- CTA ---------- */
+  .cta{
+    text-align:center; padding:160px 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(181,138,74,0.12), transparent 60%),
+      var(--void);
+  }
+  .cta h2{
+    font-family:var(--font-display); font-weight:340;
+    font-size:clamp(2.2rem, 5vw, 3.6rem); margin:14px 0 20px;
+  }
+  .cta p{ color:var(--parchment-dim); max-width:520px; margin:0 auto 40px; }
+  .cta .btn{ display:inline-block; }
+  .cta-fine{ margin-top:40px; font-family:var(--font-mono); font-size:0.7rem; color:var(--parchment-faint); letter-spacing:0.04em; }
+
+  /* ---------- FOOTER ---------- */
+
+  @media (max-width:720px){
+    .section{ padding:88px 0; }
+    .cta{ padding:100px 0; }
+    .hero-img{ -webkit-mask-image:none; mask-image:none; }
+
+    /* Demo full-bleed on mobile */
+    .rank-stage-demo{
+      margin-left:calc(50% - 50vw);
+      margin-right:calc(50% - 50vw);
+      border:none;
+      border-radius:0;
+    }
+
+    /* Controls: play + clear side by side, volume below, status last */
+    .organ-controls-bar{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px 12px;
+      padding:16px 20px 20px;
+    }
+    .organ-vol-group{
+      grid-column:1 / -1;
+      gap:12px;
+    }
+    .organ-vol-group input[type="range"]{
+      flex:1;
+      width:auto;
+    }
+    .organ-status-text{
+      grid-column:1 / -1;
+      margin-left:0;
+      text-align:center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="nav" id="nav">
+  <a href="index.html" class="nav-mark">STEINBACH <span>INSTRUMENTS</span></a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li class="nav-item-drop">
+      <a href="instruments.html" class="active">Instruments<span class="caret">▾</span></a>
+      <ul class="nav-drop-menu">
+        <li><a href="historic-organ.html" class="current">Historic Organ</a></li>
+        <li><a href="tine-piano.html">Tine Piano</a></li>
+        <li><a href="transistor-organ.html">Transistor Organ</a></li>
+        <li><a href="reed-piano.html">Reed Piano</a></li>
+      </ul>
+    </li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="hero-img"></div>
+    <div class="hero-bg"></div>
+    <div class="hero-beam"></div>
+    <div class="hero-content">
+      <h1>Historic <em>Organ</em></h1>
+      <p class="hero-sub">Heinrich Röver &amp; Söhne · Heilig-Kreuz-Kirche Bevern</p>
+      <div class="hero-actions">
+        <a href="#preview" class="btn btn-fill">Try it live</a>
+        <a href="#download" class="btn btn-ghost">Download · Coming soon</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section rank-section" id="preview">
+    <div class="wrap">
+      <div class="rank-copy reveal">
+        <div class="eyebrow">Interactive Preview</div>
+        <h2>Pull the stops.<br>Press <i>play.</i></h2>
+        <p>Click any register to activate it. Start the rank, and every selected stop sounds simultaneously. Add or remove registers while playing to shape the sound in real time, with the same 17 stops as the original console at Heilig-Kreuz-Kirche.</p>
+      </div>
+
+      <div class="rank-stage rank-stage-demo reveal">
+        <div class="organ-loading-bar">
+          <div class="organ-loading-fill" id="organ-loading-fill"></div>
+        </div>
+
+        <div class="organ-canvas-wrapper">
+          <div class="organ-canvas-scaler" id="organ-canvas-scaler">
+            <div class="organ-canvas" id="organ-canvas">
+
+              <img class="organ-bg"
+                   src="assets/images/ORGEL/Organ_Wallpaper.png"
+                   alt="" draggable="false" aria-hidden="true">
+
+              <!-- Row ky=102 → top=52px -->
+              <button class="organ-stop-btn" style="left:25px;top:52px;background-image:url('assets/images/ORGEL/H_Gambe_8.png')"          data-file="GAMBE8"         data-label="Gambe 8'"         aria-pressed="false" aria-label="Gambe 8'"></button>
+              <button class="organ-stop-btn" style="left:91px;top:52px;background-image:url('assets/images/ORGEL/H_Principal_8.png')"      data-file="PRINCIPAL8"     data-label="Principal 8'"     aria-pressed="false" aria-label="Principal 8'"></button>
+              <button class="organ-stop-btn" style="left:864px;top:52px;background-image:url('assets/images/ORGEL/C_Mixtur3fach.png')"      data-file="MIXTUR3FACH"    data-label="Mixtur 3-fach"    aria-pressed="false" aria-label="Mixtur 3-fach"></button>
+              <button class="organ-stop-btn" style="left:930px;top:52px;background-image:url('assets/images/ORGEL/H_Bordun_16.png')"        data-file="BORDUN16"       data-label="Bordun 16'"       aria-pressed="false" aria-label="Bordun 16'"></button>
+
+              <!-- Row ky=179 → top=129px -->
+              <button class="organ-stop-btn" style="left:25px;top:129px;background-image:url('assets/images/ORGEL/H_Oktave_4.png')"         data-file="OCTAVE4"        data-label="Oktave 4'"        aria-pressed="false" aria-label="Oktave 4'"></button>
+              <button class="organ-stop-btn" style="left:91px;top:129px;background-image:url('assets/images/ORGEL/C_ManualCoppel.png')"     data-file="COPPEL"         data-label="ManualCoppel"     aria-pressed="false" aria-label="ManualCoppel"></button>
+              <button class="organ-stop-btn" style="left:864px;top:129px;background-image:url('assets/images/ORGEL/H_Hohlfloete_8.png')"    data-file="HOHLFLOETE8"    data-label="Hohlflöte 8'"    aria-pressed="false" aria-label="Hohlflöte 8'"></button>
+              <button class="organ-stop-btn" style="left:930px;top:129px;background-image:url('assets/images/ORGEL/H_Oktave_2.png')"        data-file="OCTAVE2"        data-label="Oktave 2'"        aria-pressed="false" aria-label="Oktave 2'"></button>
+
+              <!-- Row ky=256 → top=206px -->
+              <button class="organ-stop-btn" style="left:25px;top:206px;background-image:url('assets/images/ORGEL/P_Prinzipalbass_8.png')"  data-file="PRINCIPALBASS8" data-label="Prinzipalbass 8'" aria-pressed="false" aria-label="Prinzipalbass 8'"></button>
+              <button class="organ-stop-btn" style="left:91px;top:206px;background-image:url('assets/images/ORGEL/P_Gedackt_8.png')"        data-file="GEDACKT8"       data-label="Gedackt 8'"       aria-pressed="false" aria-label="Gedackt 8'"></button>
+              <button class="organ-stop-btn" style="left:864px;top:206px;background-image:url('assets/images/ORGEL/S_Waldfloete_2.png')"    data-file="WALDFLOETE2"    data-label="Waldfloete 2'"    aria-pressed="false" aria-label="Waldfloete 2'"></button>
+              <button class="organ-stop-btn" style="left:930px;top:206px;background-image:url('assets/images/ORGEL/S_FlautoTraverso_8.png')" data-file="FLAUTOTRAVERSO8" data-label="FlautoTraverso 8'" aria-pressed="false" aria-label="FlautoTraverso 8'"></button>
+
+              <!-- Row ky=333 → top=283px -->
+              <button class="organ-stop-btn" style="left:25px;top:283px;background-image:url('assets/images/ORGEL/P_Subbass_16.png')"        data-file="SUBBASS16"      data-label="Subbass 16'"      aria-pressed="false" aria-label="Subbass 16'"></button>
+              <button class="organ-stop-btn" style="left:91px;top:283px;background-image:url('assets/images/ORGEL/P_Octave_4.png')"          data-file="OCTAVBASS"      data-label="Octavbass 16'"    aria-pressed="false" aria-label="Octavbass 16'"></button>
+              <button class="organ-stop-btn" style="left:864px;top:283px;background-image:url('assets/images/ORGEL/S_LieblGedackt_8.png')"   data-file="LIEBLGEDACKT8"  data-label="Liebl.Gedackt 8'" aria-pressed="false" aria-label="Lieblich Gedackt 8'"></button>
+              <button class="organ-stop-btn" style="left:930px;top:283px;background-image:url('assets/images/ORGEL/S_Salicional_8.png')"     data-file="SILICIONAL8"    data-label="Salicional 8'"    aria-pressed="false" aria-label="Salicional 8'"></button>
+
+              <!-- Row ky=410 → top=360px -->
+              <button class="organ-stop-btn" style="left:930px;top:360px;background-image:url('assets/images/ORGEL/S_FlautoDolce_4.png')"   data-file="FLAUTODOLCE4"   data-label="FlautoDolce 4'"   aria-pressed="false" aria-label="FlautoDolce 4'"></button>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="organ-controls-bar">
+          <button class="btn btn-fill btn-small btn-play organ-play-btn" id="organ-play-btn" type="button" disabled>
+            <span id="organ-play-label">Loading&hellip;</span>
+          </button>
+          <button class="btn btn-ghost btn-small" id="organ-clear-btn" type="button">Clear all</button>
+          <div class="organ-vol-group">
+            <span>Vol</span>
+            <input type="range" id="organ-volume" min="0" max="100" value="80" aria-label="Volume">
+            <span id="organ-vol-label">80</span>
+          </div>
+          <span class="organ-status-text" id="organ-status-text">0 stops ready</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">Built For Depth</div>
+        <h2>Designed for <i>history.</i></h2>
+      </div>
+
+      <div class="features">
+        <div class="feature-row reveal">
+          <div class="feature-num">01</div>
+          <div><h3>17 Individual Registers</h3><p>Every stop sampled in isolation, from the 16&prime; Subbass to the bright Mixtur III, giving you precise control over the full tonal range.</p></div>
+        </div>
+        <div class="feature-row reveal">
+          <div class="feature-num">02</div>
+          <div><h3>Multi-Microphone Capture</h3><p>Multiple microphone positions document the natural room acoustics of Heilig-Kreuz-Kirche Bevern, preserving the spatial character of the instrument.</p></div>
+        </div>
+        <div class="feature-row reveal">
+          <div class="feature-num">03</div>
+          <div><h3>Cultural Preservation</h3><p>The Röver organ is a late-romantic instrument at risk from age and limited restoration funds. This library is a permanent digital archive of its sound.</p></div>
+        </div>
+        <div class="feature-row reveal">
+          <div class="feature-num">04</div>
+          <div><h3>KONTAKT &amp; Standalone</h3><p>Available for Native Instruments KONTAKT and as a standalone app, with a custom GUI that replicates the original console, the same stop positions, the same wooden aesthetic.</p></div>
+        </div>
+        <div class="feature-row reveal">
+          <div class="feature-num">05</div>
+          <div><h3>Authentic Church Reverb</h3><p>The natural reverberation of Heilig-Kreuz-Kirche is captured with acoustic measurement technology and convolution, embedded directly into the instrument.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section instrument" id="instrument">
+    <div class="wrap">
+      <div class="instrument-grid">
+        <div class="instrument-text reveal">
+          <div class="eyebrow">The Instrument</div>
+          <h2 style="font-family:var(--font-display); font-weight:340; font-size:clamp(2rem,4vw,3rem); margin:16px 0 26px;">A century of sound. <i style="color:var(--brass-bright); font-style:italic; font-weight:300;">Preserved.</i></h2>
+          <p>The Röver organ in Heilig-Kreuz-Kirche Bevern is a late-romantic instrument built by <strong>Heinrich Röver &amp; Söhne</strong>, one of the most respected German organ builders of their era. Its pipes carry the characteristic warmth and clarity of the late 1800s, a tonal ideal that shaped sacred music for generations.</p>
+          <p>Like many historic church organs, it exists in a fragile state: aging mechanical components, limited restoration funds, and a shrinking community of specialists who understand instruments of this period.</p>
+          <p class="pull-quote">Without intervention, sounds like these can be lost within a generation.</p>
+        </div>
+        <div class="plate reveal">
+          <img class="plate-photo" src="assets/images/church-historic.jpg" alt="Heilig-Kreuz-Kirche Bevern, exterior of the historic church" loading="lazy" />
+          <div class="plate-label"><span>Plate 01 &middot; Heilig-Kreuz-Kirche</span><span>Bevern, DE</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="recording">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">Recording Session</div>
+        <h2>In the <i>field.</i></h2>
+      </div>
+      <div class="gallery-grid">
+        <div class="plate reveal"><img class="plate-photo" src="assets/images/console-session.jpg" alt="Organ console during recording session" loading="lazy" /><div class="plate-label"><span>Plate 02 &middot; Mic placement</span><span>01</span></div></div>
+        <div class="plate reveal"><img class="plate-photo" src="assets/images/session-mic.jpg" alt="Microphone placement setup" loading="lazy" /><div class="plate-label"><span>Plate 03 &middot; Historic images</span><span>02</span></div></div>
+        <div class="plate reveal"><img class="plate-photo" src="assets/images/session-setup.jpg" alt="Recording setup inside the church" loading="lazy" /><div class="plate-label"><span>Plate 04 &middot; Church entrance</span><span>03</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section specs" id="technical">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">Technical</div>
+        <h2>What&rsquo;s <i>inside.</i></h2>
+      </div>
+      <div class="spec-table reveal">
+        <div class="spec-row"><div class="spec-label">Registers</div><div class="spec-value">17 Stops</div><div class="spec-sub">HW &middot; SW &middot; Pedal</div></div>
+        <div class="spec-row"><div class="spec-label">Sample Format</div><div class="spec-value">24-bit / 96 kHz</div><div class="spec-sub">Lossless WAV</div></div>
+        <div class="spec-row"><div class="spec-label">Microphones</div><div class="spec-value">Multi-position</div><div class="spec-sub">Near-field + room</div></div>
+        <div class="spec-row"><div class="spec-label">Platform</div><div class="spec-value">KONTAKT 8+</div><div class="spec-sub">VST3 + AU + Standalone</div></div>
+        <div class="spec-row"><div class="spec-label">Compatibility</div><div class="spec-value">macOS</div><div class="spec-sub">Apple Silicon (M-series)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="download">
+    <div class="wrap">
+      <div class="eyebrow reveal">Coming Soon</div>
+      <h2 class="reveal">Get the full instrument.</h2>
+      <p class="reveal">The complete Digital Heritage Organ library. All registers, all microphone positions, authentic church reverb, and the original console GUI, for KONTAKT or as a standalone app.</p>
+      <span class="btn btn-disabled reveal" aria-disabled="true">Get the instrument</span>
+      <div class="cta-fine reveal">For KONTAKT 8+ &middot; Standalone app &middot; macOS &middot; Apple Silicon &middot; ~7 GB</div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="footer-disclaimer">All trademarks are the property of their respective owners and are used solely to identify the instruments that were sampled. No affiliation or endorsement is implied.</p>
+    <div class="footer-bottom">
+      <span>&copy; Steinbach Instruments &middot; Digital Heritage</span>
+      <span><a href="impressum.html">Legal Notice</a> &nbsp;&middot;&nbsp; <a href="datenschutz.html">Privacy Policy</a> &nbsp;&middot;&nbsp; <a href="#top">Back to top</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/orgel.js"></script>
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>
