@@ -283,8 +283,13 @@ button{ font:inherit; color:inherit; }
     box-shadow:none;
     padding:4px 0 4px 16px;
   }
+  .nav-item-drop.is-open .nav-drop-menu,
+  .nav-item-drop:hover .nav-drop-menu,
+  .nav-item-drop:focus-within .nav-drop-menu{
+    transform:none;
+  }
   .nav-item-drop.is-open .nav-drop-menu{ display:block; }
-  .nav-drop-menu li a{ padding:12px 0; }
+  .nav-drop-menu li a{ padding:12px 0; white-space:normal; }
 }
 
 .nav-scrim{
